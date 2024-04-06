@@ -27,12 +27,15 @@ public class PesquisaLivros {
                 .send(request, HttpResponse.BodyHandlers.ofString());
 
         String json = response.body();
-        System.out.println(json);
-        Gson gson = new GsonBuilder()
-                .setFieldNamingPolicy(FieldNamingPolicy.UPPER_CAMEL_CASE)
-                .create();
+        Gson gson = new GsonBuilder().create();
 
-        Livro livro = gson.fromJson(json, Livro.class);
-        System.out.println(livro);
+        JsonTreatment respostaLivros = gson.fromJson(json, JsonTreatment.class);
+        if (respostaLivros.getItems().length > 0) {
+            JsonTreatment.VolumeInfo volumeInfo = respostaLivros.getItems()[0].getVolumeInfo();
+            Livro livro = new Livro(volumeInfo.getTitle(), volumeInfo.getAuthors(), volumeInfo.getPublisher(), volumeInfo.getPublishedDate());
+            System.out.println(livro);
+        } else {
+            System.out.println("Nenhum livro encontrado.");
+        }
     }
 }
