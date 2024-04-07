@@ -1,5 +1,8 @@
 package Exercicios.Desafio;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
 import java.io.IOException;
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -14,7 +17,10 @@ public class ProcuraUsers {
         try {
             String address = consulta(scanner, accessToken);
             String json = buildHttpRequest(address,accessToken);
-            System.out.println(json);
+            Gson gson = new GsonBuilder().create();
+            User.GitHubUser gitHubUser = gson.fromJson(json, User.GitHubUser.class);
+            User user = new User(gitHubUser);
+            System.out.println(user);
         } catch (UserNotFoundException e) {
             System.out.println("Hmmm. Parece que este usuário não existe...");
             System.out.println(e.getMessage());
@@ -25,13 +31,13 @@ public class ProcuraUsers {
     public static String consulta(Scanner scanner, String token){
         System.out.println("Informe o nome de usuário que você deseja encontrar: ");
         String username = scanner.nextLine();
-        return "https://api.github.com/search?q=" + username + "type:user";
+        return "https://api.github.com/users/" + username;
     }
     public static String buildHttpRequest(String address, String token) throws IOException, InterruptedException {
         HttpClient client = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(address))
-                .header("Authorization", "token " + token)
+                .header("Accept", "application/vnd.github.v3+json")
                 .build();
         HttpResponse <String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
         if(response.statusCode() == 404){
