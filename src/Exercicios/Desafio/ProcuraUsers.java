@@ -10,7 +10,7 @@ import java.util.Scanner;
 public class ProcuraUsers {
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
-        String accessToken = "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";
+        String accessToken = "****************************************";
         try {
             String address = consulta(scanner, accessToken);
             String json = buildHttpRequest(address,accessToken);
